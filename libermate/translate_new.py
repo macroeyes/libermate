@@ -50,14 +50,14 @@ block[ptoken] returns [sstr]
 """
 
 class Mat2Py:
-    'Translate MATLAB AST to Python AST'
+    """Translate MATLAB AST to Python AST"""
     def __init__(self):
         mapfunc={}
         do_funcs=filter(lambda func: func.startswith('do_'), dir(self))
         for func in do_funcs:
             basefunc=func[3:]
-            if(basefunc.isupper() and hasattr(MatlabParser, basefunc)):
-                if(isinstance(getattr(MatlabParser, basefunc), types.IntType)):
+            if basefunc.isupper() and hasattr(MatlabParser, basefunc):
+                if isinstance(getattr(MatlabParser, basefunc), types.IntType):
                     mapfunc[getattr(MatlabParser, basefunc)]=getattr(self, func)
             elif hasattr(MatlabParser, 'LITERAL_'+basefunc):
                 mapfunc[getattr(MatlabParser, 'LITERAL_'+basefunc)]=getattr(self, func)
@@ -80,26 +80,26 @@ class Mat2Py:
         return func(node, ptoken)
         
     def do_FUNCTION(self, node,  ptoken):
-        'Handle FUNCTION node'
+        """Handle FUNCTION node"""
         self.incr()
         nodes=[ child.name for child in node.children ]
         cc=[ self.write_node(child, "") for child in node.children ]
         print node.children[1].name
-        if('RETURN_VARS' in nodes ):
+        if 'RETURN_VARS' in nodes:
             index=nodes.index('RETURN_VARS')
             self.returnval=cc[index]
             del cc[index]
             del nodes[index]
         else:
             self.returnval=''
-        if('FUNCTION_ARGS' in nodes):
+        if 'FUNCTION_ARGS' in nodes:
             index=nodes.index('FUNCTION_ARGS')
             args=cc[index]
             del cc[index]
             del nodes[index]
         else:
             args=''
-        if('NAME' in nodes):
+        if 'NAME' in nodes:
             index=nodes.index('NAME')
             name=cc[index]
             del cc[index]
@@ -112,24 +112,24 @@ class Mat2Py:
         return sstr
         
     def do_FUNCTION_ARGS(self, node,  ptoken):
-        'Handle FUNCTION_ARGS node'
+        """Handle FUNCTION_ARGS node"""
         cc=[ self.write_node(child, "") for child in node.children ]
         sstr="("+", ".join(cc)+")"
         return sstr
 
     def do_RETURN_VARS(self, node, ptoken):
-        'handle RETURN_VARS node'
+        """handle RETURN_VARS node"""
         cc=[ self.write_node(child, "") for child in node.children ]
         sstr="["+", ".join(cc)+"]"
         return sstr
 
     def do_COMMENT(self, node, ptoken):
-        'handle COMMENT node'
+        """handle COMMENT node"""
         sstr="#"+node.value
         return sstr
 
     def do_SCOPE(self, node, ptoken):
-        'Handle SCOPE node'
+        """Handle SCOPE node"""
         sstr=node.value
         return sstr
         
@@ -189,7 +189,7 @@ class Mat2Py:
         #cc=[ self.write_node(child, "") for child in node.children[2:] ]
         sstr="try:"+self.nl+a
         self.decr()
-        if(b):
+        if b:
             sstr+=self.nl+b
         sstr+=self.nl
         return sstr
@@ -238,7 +238,7 @@ class Mat2Py:
         a=self.write_node(node.children[0], "=")
         self.is_lhs=False
         self.is_simple_rhs=True
-        if(len(node.children)>1):
+        if len(node.children)>1:
             b=self.write_node(node.children[1], "=")
             sstr=self.bop("=", ptoken,  a, b, add_padding=True)
         else:
@@ -383,7 +383,7 @@ class Mat2Py:
 
     def do_BRACE_ARGS(self, node, ptoken):
         pin_var=self.in_var
-        if(node.children[0].name=='VAR'):
+        if node.children[0].name=='VAR':
             self.in_var=True
         else:
             self.in_var=False
@@ -395,7 +395,7 @@ class Mat2Py:
 
     def do_PAREN_ARGS(self, node, ptoken):
         pin_var=self.in_var
-        if(node.children[0].name=='VAR'):
+        if node.children[0].name=='VAR':
             self.in_var=True
         else:
             self.in_var=False
@@ -407,24 +407,24 @@ class Mat2Py:
         return sstr
 
     def do_LBRACE(self, node, ptoken):
-        'LHS Assign'
+        """LHS Assign"""
         cc=[ self.write_node(child, ",") for child in node.children ]
         sstr=self.join_args(cc, True)
         return sstr
 
     def do_MATRIX(self, node, ptoken):
-        'Construct Matrix Node'
+        """Construct Matrix Node"""
         cc=[ self.write_node(child, ",") for child in node.children ]
-        if(cc):
+        if cc:
             sstr="np.array("+", ".join(cc)+")" 
         else:
             sstr="np.array([])"
         return sstr
 
     def do_CELL(self, node, ptoken):
-        'Construct Cell Array Node'
+        """Construct Cell Array Node"""
         cc=[ self.write_node(child, ",") for child in node.children]
-        if(cc):
+        if cc:
             sstr="cellarray("+", ".join(cc)+")" 
         else:
             sstr="cellarray([])"
@@ -436,7 +436,7 @@ class Mat2Py:
         return sstr
 
     def do_ROWJOIN(self, node, ptoken):
-        'Join Rows of matrix / cell array'
+        """Join Rows of matrix / cell array"""
         cc=[ self.write_node(child, ",") for child in node.children ]
         # alternative form
         #sstr="r_["+", ".join(cc)+"]"
@@ -444,7 +444,7 @@ class Mat2Py:
         return sstr
 
     def do_COLUMNJOIN(self, node, ptoken):
-        'Join Columns of matrix / cell array'
+        """Join Columns of matrix / cell array"""
         cc=[ self.write_node(child, ",") for child in node.children ]
         # alternative form
         #sstr="c_["+", ".join(cc)+"]"
@@ -452,42 +452,42 @@ class Mat2Py:
         return sstr
 
     def do_AND(self, node, ptoken):
-        'Logical And'
+        """Logical And"""
         a=self.write_node(node.children[0], ",")
         b=self.write_node(node.children[1], ",")
         sstr="np.logical_and("+a+", "+b+")"
         return sstr
 
     def do_OR(self, node, ptoken):
-        'Logical Or'
+        """Logical Or"""
         a=self.write_node(node.children[0], ",")
         b=self.write_node(node.children[1], ",")
         sstr="np.logical_or("+a+", "+b+")"
         return sstr
 
     def do_STAR(self, node, ptoken):
-        'Matrix Mult'
+        """Matrix Mult"""
         a=self.write_node(node.children[0], ",")
         b=self.write_node(node.children[1], ",")
         sstr="np.dot("+a+", "+b+")"
         return sstr
 
     def do_DIV(self, node, ptoken):
-        'Matrix Division'
+        """Matrix Division"""
         a=self.write_node(node.children[0], ",")
         b=self.write_node(node.children[1], ",")
         sstr="matdiv("+a+", "+b+")"
         return sstr
 
     def do_DOTBACKDIV(self, node, ptoken):
-        'Element wise back division'
+        """Element wise back division"""
         a=self.write_node(node.children[0], ",")
         b=self.write_node(node.children[1], ",")
         sstr="matbackdiv("+a+", "+b+")"
         return sstr
 
     def do_EXP(self, node, ptoken):
-        'Matrix Power'
+        """Matrix Power"""
         a=self.write_node(node.children[0], ",")
         b=self.write_node(node.children[1], ",")
         sstr="matixpower("+a+", "+b+")"
@@ -511,7 +511,7 @@ class Mat2Py:
         return sstr
 
     def do_ARRAY_END(self, node, ptoken):
-        'Last Element of Array'
+        """Last Element of Array"""
         sstr="xend"
         #sstr="0"
         return sstr
@@ -521,13 +521,13 @@ class Mat2Py:
         return sstr
 
     def do_TRANS(self, node, ptoken):
-        'Conj Transpose'
+        """Conj Transpose"""
         a=self.write_node(node.children[0], ".")
         sstr=a+".conj().T"
         return sstr
 
     def do_DOTTRANS(self, node, ptoken):
-        'Simple Transpose'
+        """Simple Transpose"""
         a=self.write_node(node.children[0], ".")
         sstr=a+".T"
         return sstr
@@ -538,10 +538,10 @@ class Mat2Py:
         return sstr
 
     def do_NAME(self, node, ptoken):
-        'Non variable label'
+        """Non variable label"""
         self.nargin=0
         cc=[ self.write_node(child, "NAME") for child in node.children ]
-        if(cc):
+        if cc:
             sstr=self.Lookup(node.value)+"".join(cc)
         else:
             sstr=self.Lookup(node.value)
@@ -588,14 +588,14 @@ class Mat2Py:
         return sstr
 
     def do_VAR(self, node, ptoken):
-        'Variable label'
+        """Variable label"""
         pin_var=self.in_var
         self.in_var=True
         cc=[ self.write_node(child, "VAR") for child in node.children ]
-        if(cc):
-            sstr=(node.value)+"".join(cc)
+        if cc:
+            sstr= node.value +"".join(cc)
         else:
-            sstr=(node.value)
+            sstr= node.value
             #if(self.is_simple_rhs):
             #    sstr+="copy("+sstr+")"
         self.in_var=pin_var

@@ -48,7 +48,7 @@ except ImportError:
 
 
 def ASTtoTree(ast):
-    'Build'
+    """Build"""
     a=ast
     b=[]
     while a:
@@ -93,7 +93,7 @@ python_priority = {
 # n = numel(A) returns the number of elements, n, in array A.
 
 class MatParse(MatlabParser.Parser):
-    'Higher level logic for parser'
+    """Higher level logic for parser"""
     def __init__(self, *args, **kwargs):
         MatlabParser.Parser.__init__(self, *args, **kwargs)
         self.vars=set()
@@ -101,12 +101,12 @@ class MatParse(MatlabParser.Parser):
         self.is_dot=False
         self.inside_args=False
     def new_scope(self):
-        'Create a new function scope'
+        """Create a new function scope"""
         self.vars=set()
         self.funcs=set()
 
     def get_scope(self):
-        'Get current scope'
+        """Get current scope"""
         ast=self.astFactory.create(MatlabParser.SCOPE,", ".join(self.vars)+"\n    # Function calls: "+", ".join(self.funcs))
         print 'The following appear to be variables:'
         print '  ',", ".join(self.vars)
@@ -114,25 +114,25 @@ class MatParse(MatlabParser.Parser):
         print '  ',", ".join(self.funcs)
         return ast
     def as_global(self,vartoken):
-        'add variable as a global'
+        """add variable as a global"""
         vartoken.setType(MatlabParser.VAR)
         self.vars.add(vartoken.getText())
     def as_persistant(self,vartoken):
-        'add variable as a persistant'
+        """add variable as a persistant"""
         vartoken.setType(MatlabParser.VAR)
         self.vars.add(vartoken.getText())
     def as_var(self,vartoken):
-        'NAME token is a variable'
+        """NAME token is a variable"""
         vartoken.setType(MatlabParser.VAR)
         self.vars.add(vartoken.getText())
     def as_func(self,functoken):
-        'NAME token is a function'
+        """NAME token is a function"""
         self.funcs.add(functoken.getText())
         
     def var_lookup(self,vartoken):
-        'Lookup NAME token in scope and set type'
+        """Lookup NAME token in scope and set type"""
         #print("Checking var",vartoken.getText())
-        if(self.is_dot or (vartoken.getText() in self.vars)):
+        if self.is_dot or (vartoken.getText() in self.vars):
             vartoken.setType(MatlabParser.VAR)
         else:
             self.as_func(vartoken)
@@ -148,7 +148,7 @@ pylab_names=['absolute', 'acorr', 'add', 'add_docstring', 'add_newdoc', 'add_new
 
 import keyword
 class Mat2PyTrans(translate_new.Mat2Py):
-    'Higher level logic for translator'
+    """Higher level logic for translator"""
     def __init__(self):
         #Mat2Py.Walker.__init__(self)
         translate_new.Mat2Py.__init__(self)
@@ -187,108 +187,108 @@ class Mat2PyTrans(translate_new.Mat2Py):
             'assert':'matcompat.assert',
             }
     def incr(self):
-        'increment indent'
+        """increment indent"""
         self.indcnt+=1
         self.indent=" "*(self.indcnt*4)
         self.nl="\n"+self.indent
         #print 'increment "'+self.indent+'"'
     def decr(self):
-        'decrement indent'
+        """decrement indent"""
         self.indcnt-=1
         self.indent=" "*(self.indcnt*4)
         self.nl="\n"+self.indent
         #print 'decrement "'+self.indent+'"'
     def Lookup(self, name):
-        'Do simple function mapping'
-        if(name in self.mapping):
+        """Do simple function mapping"""
+        if name in self.mapping:
             return self.mapping[name]
-        if(name in numpy_names):
+        if name in numpy_names:
             return 'np.'+name
-        if(name in pylab_names):
+        if name in pylab_names:
             return 'plt.'+name
-        if(keyword.iskeyword(name)):
-            if(name!='assert'):
-                name=name+'_rename'
+        if keyword.iskeyword(name):
+            if name!='assert':
+                name += '_rename'
         return name
     def bop(self, op, ptoken,  a, b, add_padding=False):
-        'binary operator'
-        if(add_padding):
+        """binary operator"""
+        if add_padding:
             pad=' '
         else:
             pad=''
-        if(not a):
+        if not a:
             a='Error'
-        if(not b):
+        if not b:
             b='Error'
         k=a+pad+op.strip()+pad+b
         #print 'bop "%s"[%d] <- "%s"[%d] %s %s' % ( ptoken, python_priority[ptoken],  op, python_priority[op],  a,  b) 
-        if(python_priority[ptoken]>python_priority[op]):
+        if python_priority[ptoken]>python_priority[op]:
             #print '('+k+')'
             return '('+k+')'
         else:
             return k
     def preop(self, op, ptoken, a, add_padding=False):
-        'Prefix operator'
-        if(add_padding):
+        """Prefix operator"""
+        if add_padding:
             pad=' '
         else:
             pad=''
-        if(not a):
+        if not a:
             a='Error'
         k=op.strip()+pad+a
         #print 'preop "%s"[%d] <- "%s"[%d] %s' % ( ptoken, python_priority[ptoken],  op, python_priority[op],  a) 
-        if(python_priority[ptoken]>python_priority[op]):
+        if python_priority[ptoken]>python_priority[op]:
             #print '('+k+')'
             return '('+k+')'
         else:
             return k
     def multiop(self, op, ptoken, c, add_padding=False):
-        'multiple operator'
-        if(add_padding):
+        """multiple operator"""
+        if add_padding:
             pad=' '
         else:
             pad=''
         k=(pad+op.strip()+pad).join(c)
-        if(python_priority[ptoken]>python_priority[op]):
+        if python_priority[ptoken]>python_priority[op]:
             return '('+k+')'
         else:
             return k
     def colonop(self, ptoken, cc):
-        'colon operator'
+        """colon operator"""
         a=cc[0]
         b=cc[1]
-        if(len(cc)>2):
+        if len(cc)>2:
             c=cc[2]
         else:
             c=None
-        if( self.in_var):
-            if(not a and not b):
+        if self.in_var:
+            if not a and not b:
                 sstr=":"
             else:
-                if(a.replace('.','').isdigit()):
+                if a.replace('.','').isdigit():
                     a=str(int(float(a))-1)
                 else:
                     a="int("+a+")-1"
-                if(c):
-                    if(c=='xend'):
+                if c:
+                    if c=='xend':
                         c=''
                     sstr=a+":"+c+":"+b
                 else:
-                    if(b=='xend'):
+                    if b=='xend':
                         b=''
                     sstr=a+":"+b
         else:
-            if(not a and not b):
+            if not a and not b:
                 sstr="Error:Error"
             else:
-                if(c):
-                    if(c.replace('.','').isdigit() and b.replace('.','').isdigit()):
+                if c:
+                    if c.replace('.','').isdigit() and b.replace('.','').isdigit():
                         c=str(float(c)+float(b))
                     else:
                         c="("+c+")+("+b+")"
                     sstr="np.arange("+a+", "+c+", "+b+")"
                 else:
-                    if(b.replace('.','').isdigit()):
+                    if b.replace('.','').isdigit():
                         b=str(float(b)+1)
                     else:
                         b="("+b+")+1"
@@ -297,30 +297,30 @@ class Mat2PyTrans(translate_new.Mat2Py):
         
     def join_args(self, cc, braces=False, ptoken=None):
         def mapper(ii):
-            if(":" in ii):
+            if ":" in ii:
                 return ii
-            elif(ii.isdigit()):
+            elif ii.isdigit():
                 return str(int(ii)-1)
             else:
                 return 'int('+ii+')-1'
-        if(self.in_var or self.is_lhs or ptoken=="VAR"):
-            if(braces):
+        if self.in_var or self.is_lhs or ptoken=="VAR":
+            if braces:
                 sstr=".cell["
             else:
                 sstr="["
             
             cc=[mapper(ii) for ii in cc]
             k=",".join(cc)
-            if(k==':' and not self.is_lhs and not braces):
+            if k==':' and not self.is_lhs and not braces:
                 return '.flatten(1)'
             else:
                 sstr+=k
-            if(braces):
+            if braces:
                 sstr+="]"
             else:
                 sstr+="]"
         else:
-            if(braces):
+            if braces:
                 sstr=".cell_getattr("+", ".join(cc)+")"
             else:
                 sstr="("+", ".join(cc)+")"
@@ -367,7 +367,7 @@ class MainApp(CommandLine.App):
             except OSError, desc:
                 print 'Error: could not open file %s' % filename
                 sys.exit(2)
-            if(stat.S_ISDIR(stat_info[stat.ST_MODE])):
+            if stat.S_ISDIR(stat_info[stat.ST_MODE]):
                 print 'Error: %s is a directory but should be a file' % filename
                 sys.exit(2)
             if filename.replace('.m','.py') == filename:
@@ -377,7 +377,7 @@ class MainApp(CommandLine.App):
         #print self.files
         self.main()
     def main(self):
-        if(self.headerfile):
+        if self.headerfile:
             f=open(self.headerfile)
             header=''.join(f.readlines())
             f.close()
@@ -402,21 +402,21 @@ class MainApp(CommandLine.App):
             rules.run()
             #clips.SaveFacts(filename.replace('.m','.facts2'))
             
-            if(self.astdump):
+            if self.astdump:
                 outfile = filename.replace('.m', '.ast')
                 print 'writing to file', outfile
                 f = open(outfile, 'w')
                 astlist=[node.to_list() for node in root]
-                if(has_syck and False):
+                if has_syck and False:
                     f.write(syck.dump(astlist, Dumper=DumpNoTuple))
                 else:
                     f.write(pprint.pformat(astlist))
                 f.close()
-            if(0):
+            if 0:
                 outfile = filename.replace('.m', '.nast')
                 print 'writing to file', outfile
                 f=open(outfile, 'w')
-                if(has_syck and False):
+                if has_syck and False:
                     f.write(syck.dump(root, Dumper=DumpNoTuple))
                 else:
                     f.write(pprint.pformat(root))
@@ -455,12 +455,12 @@ class MainApp(CommandLine.App):
             f.close()
         
 def testLexer(files):
-    'do quick scan of selected files'
+    """do quick scan of selected files"""
     #files=glob.glob('/home/eric/Downloads/mpi-ikl-simplemkl-1.0/*.m')
     quick_scan(files)
     
 def testLexer(filename):
-    'test parsing of specified file'
+    """test parsing of specified file"""
 
     f = file(filename, "r")
     lexer = MatlabLexer.Lexer(f)          ### create a lexer for calculator
@@ -471,15 +471,15 @@ def testLexer(filename):
         if token.getType() in [MatlabParser.END, MatlabParser.ARRAY_END, MatlabParser.STRING,
                                MatlabParser.TRANS]:
             print "\\"+str(pcount)+ MatlabParser._tokenNames[token.getType()]+'/',
-        if(token.getType() in [MatlabParser.LPAREN, MatlabParser.LBRACE, MatlabParser.ATPAREN]):
+        if token.getType() in [MatlabParser.LPAREN, MatlabParser.LBRACE, MatlabParser.ATPAREN]:
             pcount+=1
             print '\\'+str(pcount)+'/',
-        if(token.getType() in [MatlabParser.RPAREN, MatlabParser.RBRACE]):
+        if token.getType() in [MatlabParser.RPAREN, MatlabParser.RBRACE]:
             pcount-=1
             print '\\'+str(pcount)+'/',
 
 def testParser(files):
-    'Test parsing of specified files'
+    """Test parsing of specified files"""
     
     for filename in files:
         f = file(filename, "r")
