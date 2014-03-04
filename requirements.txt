@@ -1,0 +1,2 @@
+pyclip
+antlr_python_runtime

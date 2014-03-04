@@ -17,6 +17,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
+from libermate import MatlabParser
 
 __author__ = "Eric C. Schug (schugschug@gmail.com)"
 __copyright__ = "Copyright (c) 2009 Eric C. Schug"
@@ -24,13 +25,10 @@ __license__ = "GNU General Public License"
 __revision__ = "$Id$"
 
 # Standard imports
-import sys
 import types
 
 
 # Internal imports
-import antlr
-import MatlabParser
 
 """
 block[ptoken] returns [sstr]

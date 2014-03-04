@@ -2,3 +2,6 @@
 .idea/
 *.iml
 atlassian-ide-plugin.xml
+build/
+dist/
+*.egg-info/

@@ -17,6 +17,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
+from libermate import MatlabParser
 
 __author__ = "Eric C. Schug (schugschug@gmail.com)"
 __copyright__ = "Copyright (c) 2009 Eric C. Schug"
@@ -30,7 +31,6 @@ import traceback
 import clips
 
 #import RuleEngine
-import MatlabParser
 
 class Match:
     pass
@@ -144,7 +144,7 @@ class ASTNode(object):
     def get_name(self):
         return MatlabParser._tokenNames[self._number]
     def set_name(self, name):
-        number=MatlabParser._tokenNames.index(name)
+        number= MatlabParser._tokenNames.index(name)
         self.number=number
     name = property(get_name, set_name)
     

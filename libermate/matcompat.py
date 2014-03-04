@@ -21,19 +21,13 @@ __copyright__ = "Copyright (c) 2009 Eric C. Schug"
 __license__ = "GNU General Public License"
 __revision__ = "$Id$"
 
-import numpy as np
-import scipy
-import matcompat
-
 # if available import pylab (from matlibplot)
 try:
     import matplotlib.pylab as plt
 except ImportError:
     pass
 
-import types
-
-#does structure have attribute/field name 
+#does structure have attribute/field name
 def isfield(struct,name):
     return hasattr(struct,name)
 

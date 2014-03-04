@@ -1,7 +1,9 @@
 ### $ANTLR 2.7.6 (20071205): "mat2py.g" -> "MatlabParser.py"$
 ### import antlr and other modules ..
 import sys
-import antlr
+
+from libermate import antlr
+
 
 version = sys.version.split()[0]
 if version < '2.2.1':
@@ -32,15 +34,13 @@ __author__ = "Eric C. Schug (schugschug@gmail.com)"
 __copyright__ = "Copyright (c) 2009 Eric C. Schug"
 __license__ = "GNU General Public License"
 __revision__ = "$Id$"
-   
-import traceback
-### header action <<< 
+
+### header action <<<
 ### preamble action>>>
 
 ### preamble action <<<
 
 ### import antlr.Token 
-from antlr import Token
 ### >>>The Known Token Types <<<
 SKIP                = antlr.SKIP
 INVALID_TYPE        = antlr.INVALID_TYPE

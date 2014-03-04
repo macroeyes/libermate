@@ -17,6 +17,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
+from libermate import BaseRules, translate_new, CommandLine, MatlabParser, MatlabLexer
 
 __author__ = "Eric C. Schug (schugschug@gmail.com)"
 __version__ = "0.1"
@@ -27,13 +28,9 @@ __revision__ = "$Id$"
 # Standard Python
 import sys
 import re
-from copy import copy
-import glob
 import os
 import stat
 import pprint
-
-import clips
 
 has_syck=False
 try:
@@ -47,15 +44,7 @@ except ImportError:
     pass
 
 ### class "calcLexer extends Lexer" will generate python
-### module "calcLexer" with class "Lexer". 
-import MatlabLexer
-import MatlabParser
-import Mat2Py
-import translate_new
-
-import antlr
-import CommandLine
-import BaseRules
+### module "calcLexer" with class "Lexer".
 
 
 def ASTtoTree(ast):
@@ -64,7 +53,7 @@ def ASTtoTree(ast):
     b=[]
     while a:
         c=ASTtoTree(a.getFirstChild())
-        node=BaseRules.ASTNode(a.getType(), a.getText(), c)
+        node= BaseRules.ASTNode(a.getType(), a.getText(), c)
         b.append(node)
         a=a.getNextSibling()
     return b
@@ -405,7 +394,7 @@ class MainApp(CommandLine.App):
             print 'Parser Complete'
             a = p.getAST()
             root = ASTtoTree(a)
-            rules=BaseRules.BaseRules()
+            rules= BaseRules.BaseRules()
             for node in root:
                 node.assert_all()
             #clips.PrintAgenda()
@@ -479,12 +468,13 @@ def testLexer(filename):
     for token in lexer:
         ## do something with token
         print token.getText(),
-        if token.getType() in [MatlabParser.END,MatlabParser.ARRAY_END,MatlabParser.STRING,MatlabParser.TRANS]:
-            print "\\"+str(pcount)+MatlabParser._tokenNames[token.getType()]+'/',
-        if(token.getType() in [MatlabParser.LPAREN,MatlabParser.LBRACE,MatlabParser.ATPAREN]):
+        if token.getType() in [MatlabParser.END, MatlabParser.ARRAY_END, MatlabParser.STRING,
+                               MatlabParser.TRANS]:
+            print "\\"+str(pcount)+ MatlabParser._tokenNames[token.getType()]+'/',
+        if(token.getType() in [MatlabParser.LPAREN, MatlabParser.LBRACE, MatlabParser.ATPAREN]):
             pcount+=1
             print '\\'+str(pcount)+'/',
-        if(token.getType() in [MatlabParser.RPAREN,MatlabParser.RBRACE]):
+        if(token.getType() in [MatlabParser.RPAREN, MatlabParser.RBRACE]):
             pcount-=1
             print '\\'+str(pcount)+'/',
 
