@@ -17,10 +17,10 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-from libermate import BaseRules, translate_new, CommandLine, MatlabParser, MatlabLexer
+from . import BaseRules, translate_new, CommandLine, MatlabParser, MatlabLexer
 
 __author__ = "Eric C. Schug (schugschug@gmail.com)"
-__version__ = "0.1"
+__version__ = "0.1.0"
 __copyright__ = "Copyright (c) 2009 Eric C. Schug"
 __license__ = "GNU General Public License"
 __revision__ = "$Id$"
