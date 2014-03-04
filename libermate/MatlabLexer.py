@@ -1,6 +1,7 @@
 ### $ANTLR 2.7.6 (20071205): "mat2py.g" -> "MatlabLexer.py"$
 ### import antlr and other modules ..
-from libermate import antlr
+import antlr
+import sys
 
 version = sys.version.split()[0]
 if version < '2.2.1':
@@ -57,7 +58,7 @@ literals[u"catch"] = 54
 
 
 ### import antlr.Token 
-from libermate.antlr import Token
+from antlr import Token
 ### >>>The Known Token Types <<<
 SKIP                = antlr.SKIP
 INVALID_TYPE        = antlr.INVALID_TYPE

@@ -2,7 +2,7 @@
 ### import antlr and other modules ..
 import sys
 
-from libermate import antlr
+import antlr
 
 
 version = sys.version.split()[0]
